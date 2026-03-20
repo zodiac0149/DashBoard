@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Engineering Capstone: AI, Hardware & Comm Projects</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        body {
+            background-color: #F7F5F0;
+            color: #2C3539;
+        }
+
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #EBE7E0;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #C2B8A3;
+            border-radius: 10px;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Stone/Sand) with Terracotta and Sage Accents -->
+    <!-- Application Structure Plan: The SPA uses a dashboard structure. It begins with an Executive Summary and high-level data visualization of the proposed projects to give the user (student) a macro-view of the difficulty and domain distribution. This is followed by a highlighted "Top 3 Recommendations" section for immediate, curated decision-making. Finally, an interactive "Project Explorer" allows filtering and deep-diving into the details of all 8 projects via a dynamic modal. This structure progressively discloses information, preventing cognitive overload while ensuring all strict academic details are easily accessible. -->
+    <!-- Visualization & Content Choices: 
+         1. Doughnut Chart -> Goal: Inform -> Shows distribution of project difficulty -> Interactive hover for exact counts -> Chart.js.
+         2. Radar Chart -> Goal: Compare -> Displays the prevalence of specific technology domains (AI, Embedded, IoT, etc.) across the proposals -> Interactive hover -> Chart.js.
+         3. Interactive Cards & Modal -> Goal: Organize & Detail -> Presents complex project criteria (Problem, Gap, Tech) without cluttering the main UI -> JS DOM manipulation. 
+         CONFIRMING NO SVG/Mermaid used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+
+<body class="font-sans antialiased">
+
+    <nav class="bg-[#EBE7E0] border-b border-[#D8D2C4] sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-2xl">🎓</span>
+                    <span class="font-bold text-xl tracking-tight text-[#4A3F35]">Capstone<span
+                            class="text-[#B95C3B]">Intel</span></span>
+                </div>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#overview"
+                        class="text-[#5A5046] hover:text-[#B95C3B] font-medium transition-colors">Overview Analytics</a>
+                    <a href="#top-picks" class="text-[#5A5046] hover:text-[#B95C3B] font-medium transition-colors">Top
+                        Recommendations</a>
+                    <a href="#explorer"
+                        class="text-[#5A5046] hover:text-[#B95C3B] font-medium transition-colors">Project Explorer</a>
+                    <a href="add-project.html"
+                        class="inline-flex items-center gap-1.5 bg-[#6C8D7A] hover:bg-[#5A7A68] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">
+                        ✨ Add Project
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#2C3539] mb-4">Advanced Engineering Research Topics</h1>
+        <p class="text-xl text-[#5A5046] max-w-3xl mx-auto">
+            A curated portfolio of high-impact, final-year engineering projects at the intersection of Artificial
+            Intelligence, Hardware/Embedded Systems, and Wireless Communication. Designed for feasibility, innovation,
+            and real-world applicability.
+        </p>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
+
+        <section id="overview" class="mb-20">
+            <div class="mb-8 border-l-4 border-[#6C8D7A] pl-4">
+                <h2 class="text-3xl font-bold text-[#2C3539] mb-2">Portfolio Analytics</h2>
+                <p class="text-[#5A5046]">
+                    This section provides a high-level quantitative overview of the proposed project portfolio. By
+                    analyzing the distribution of difficulty levels and core technological domains, students and
+                    advisors can quickly align project selections with team capabilities and lab resources.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#EBE7E0]">
+                    <h3 class="text-lg font-bold text-[#4A3F35] mb-2 text-center">Difficulty Distribution</h3>
+                    <p class="text-sm text-[#7A7066] text-center mb-4">Breakdown of projects by required effort and
+                        technical complexity for a team of 2-4 students over 6-8 months.</p>
+                    <div class="chart-container">
+                        <canvas id="difficultyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-[#EBE7E0]">
+                    <h3 class="text-lg font-bold text-[#4A3F35] mb-2 text-center">Technology Domain Overlap</h3>
+                    <p class="text-sm text-[#7A7066] text-center mb-4">Radar analysis indicating how frequently core
+                        domains (AI, Wireless, Embedded, etc.) are utilized across the 8 topics.</p>
+                    <div class="chart-container">
+                        <canvas id="domainChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="top-picks" class="mb-20 bg-[#EFECE5] rounded-2xl p-6 md:p-10 shadow-inner">
+            <div class="mb-8 border-l-4 border-[#B95C3B] pl-4">
+                <h2 class="text-3xl font-bold text-[#2C3539] mb-2">🏆 Top 3 Advisor Recommendations</h2>
+                <p class="text-[#5A5046]">
+                    These three projects represent the highest potential for academic publication, real-world impact,
+                    and demonstration of cutting-edge multi-disciplinary skills. They have been selected based on their
+                    novelty, addressing of urgent societal gaps, and prototype feasibility.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="top-projects-container">
+            </div>
+        </section>
+
+        <section id="explorer" class="mb-10">
+            <div class="mb-8 border-l-4 border-[#4A3F35] pl-4">
+                <h2 class="text-3xl font-bold text-[#2C3539] mb-2">Interactive Project Explorer</h2>
+                <p class="text-[#5A5046]">
+                    Explore the complete catalog of 8 meticulously researched capstone ideas. Use the filters to isolate
+                    projects by their difficulty level. Click on any project card to reveal an in-depth breakdown of the
+                    problem statement, proposed approach, core technologies, and measurable outcomes.
+                </p>
+            </div>
+
+            <div
+                class="flex flex-col sm:flex-row justify-between items-center mb-6 bg-white p-4 rounded-lg shadow-sm border border-[#EBE7E0]">
+                <span class="font-bold text-[#4A3F35] mb-4 sm:mb-0">Filter by Difficulty:</span>
+                <div class="flex space-x-2">
+                    <button
+                        class="filter-btn active px-4 py-2 rounded-md bg-[#4A3F35] text-white text-sm font-medium transition-colors"
+                        data-filter="All">All</button>
+                    <button
+                        class="filter-btn px-4 py-2 rounded-md bg-[#EBE7E0] text-[#4A3F35] hover:bg-[#D8D2C4] text-sm font-medium transition-colors"
+                        data-filter="Medium">Medium</button>
+                    <button
+                        class="filter-btn px-4 py-2 rounded-md bg-[#EBE7E0] text-[#4A3F35] hover:bg-[#D8D2C4] text-sm font-medium transition-colors"
+                        data-filter="Hard">Hard</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6" id="all-projects-container">
+            </div>
+        </section>
+
+    </main>
+
+
+    <script>
+        const projectData = [
+            {
+                id: 1,
+                title: "NeuroGait: Wearable Smart Insoles for Real-Time Parkinson’s FoG Detection",
+                problem: "Freezing of Gait (FoG) in Parkinson's disease causes severe falls. Clinical observation is subjective, and current clinical tools are too bulky for daily home use.",
+                gap: "Existing wearables often rely on wrists/waists which capture indirect gait data, and rely on cloud processing which introduces latency, failing to provide immediate corrective feedback.",
+                approach: "Develop a smart insole equipped with pressure sensors and IMUs. Implement a TinyML model directly on an edge microcontroller to detect FoG pre-motor signatures in real-time, instantly triggering localized haptic feedback to break the freeze.",
+                tech: ["Edge AI (TinyML / TensorFlow Lite)", "Embedded Systems (nRF52 / ESP32-C3)", "Wireless (BLE)", "Sensors (IMU, FSR), Haptics"],
+                innovation: "Shifts complex gait analysis from cloud/smartphone to ultra-low-power edge hardware inside the shoe, achieving sub-second latency critical for preventing falls.",
+                outcomes: "A functional wearable prototype, latency metrics for edge inference (<100ms), and classification accuracy scores on simulated/public FoG dataset.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "Highly impactful healthcare application combining edge AI with immediate physical actuation. Extremely publishable."
+            },
+            {
+                id: 2,
+                title: "AcoustiLeak: Non-invasive Edge AI Sensor for Underground Pipeline Leak Detection",
+                problem: "Municipalities lose millions of gallons of clean water daily due to undetected micro-leaks in aging underground infrastructure.",
+                gap: "Current acoustic detection requires expensive proprietary equipment, manual surveying, or high-bandwidth continuous audio streaming which drains battery life.",
+                approach: "Create a low-cost, clamp-on acoustic sensor node using piezoelectric mics. Use embedded AI to classify acoustic signatures of leaks locally, transmitting only low-bandwidth alert payloads via LoRa to a central dashboard.",
+                tech: ["Signal Processing (Audio FFT)", "Embedded ML (Audio Classification)", "IoT Comm (LoRaWAN)", "Hardware (Piezo sensors, MCU)"],
+                innovation: "Bandwidth and power conservation through edge-based acoustic processing, making wide-scale, dense sensor deployment economically viable.",
+                outcomes: "Working sensor node, power consumption profile, ML accuracy metrics using a simulated pipe pressure test rig, and a basic LoRa dashboard.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "Tackles a critical sustainability issue. Excellent mix of signal processing, ML, and long-range communication."
+            },
+            {
+                id: 3,
+                title: "CardioRadar: Contactless Vital Sign Monitoring using mmWave & Deep Learning",
+                problem: "Continuous monitoring of heart rate and respiration for burn victims, infants, or elderly patients is hindered by uncomfortable contact-based ECG/PPG electrodes.",
+                gap: "Camera-based solutions fail in the dark and raise privacy issues. Basic radar solutions struggle with motion artifacts and precise heartbeat extraction from breathing noise.",
+                approach: "Utilize a 60GHz/77GHz mmWave FMCW radar module to capture micro-displacements of the chest. Apply deep learning (e.g., 1D-CNN or LSTM) on the radar point cloud/phase data to separate and accurately quantify respiration and heartbeat, transmitted via Wi-Fi.",
+                tech: ["Hardware (mmWave Radar Module)", "Deep Learning (CNN/LSTM)", "Signal Processing", "Wireless (Wi-Fi/MQTT)"],
+                innovation: "Applying advanced deep learning to FMCW radar signals to isolate cardiac rhythms from complex physiological and environmental noise without any privacy intrusion.",
+                outcomes: "A contactless monitor prototype, correlation metrics against a standard contact pulse oximeter, and system evaluation under various sleeping postures.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "mmWave is a highly sought-after industry skill. Privacy-preserving health tech is a massively growing sector."
+            },
+            {
+                id: 4,
+                title: "AgriEdge: AI-Powered Edge Node for Micro-Climate Crop Disease Prediction",
+                problem: "Farmers often apply pesticides prophylactically or too late because they lack localized, predictive insights into micro-climate conditions that breed crop diseases.",
+                gap: "Weather station data is too broad. Cloud-based predictive models require continuous internet, which is unreliable in rural agricultural zones.",
+                approach: "Deploy solar-powered edge nodes with soil and climate sensors. Train an ML model on micro-climate patterns to predict specific fungal/blight risks, executing the model locally and alerting via LoRaWAN.",
+                tech: ["IoT Sensors (Temp, Hum, Soil Moist)", "Edge AI (Decision Trees/SVM)", "Power Electronics (Solar/Battery)", "Comm (LoRaWAN)"],
+                innovation: "Decentralizes disease prediction to the farm field itself, operating completely independently of internet connectivity for inference.",
+                outcomes: "Deployed node prototype, edge ML accuracy validation, battery life simulation, and alert delivery success rate over LoRa.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false
+            },
+            {
+                id: 5,
+                title: "AeroMesh: Autonomous Drone Swarm Node for Post-Disaster Ad-Hoc Mesh Networking",
+                problem: "In major disasters (earthquakes, floods), terrestrial communication infrastructure is destroyed, leaving first responders without coordination capabilities.",
+                gap: "Current drone setups rely on direct line-of-sight to a base station or pilot, limiting range and failing in complex urban or mountainous topographies.",
+                approach: "Equip off-the-shelf drones with lightweight Wi-Fi/ESP32-S3 mesh routing payloads and a lightweight vision AI. The drones establish an autonomous flying mesh network to relay text/voice data, while the AI scans for human shapes/SOS signals.",
+                tech: ["Wireless Mesh Networking (802.11s / ESP-Mesh)", "Computer Vision (CNN for Human Detection)", "Hardware (Drone integration)"],
+                innovation: "Simultaneous execution of emergency ad-hoc communication routing and automated visual survivor detection on a single airborne edge platform.",
+                outcomes: "Demonstration of multi-node mesh communication routing, packet delivery ratio metrics, and vision AI detection accuracy from aerial angles.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false
+            },
+            {
+                id: 6,
+                title: "SolarMax: RL-Based Maximum Power Point Tracking (MPPT) with Cloud Telemetry",
+                problem: "Solar panels suffer efficiency drops due to partial shading, dust, and temperature changes. Traditional perturb-and-observe MPPT algorithms struggle with rapid environmental shifts.",
+                gap: "Conventional controllers fail to find the global maximum power point during complex partial shading, trapping the system at local maxima and wasting energy.",
+                approach: "Design a DC-DC converter hardware circuit governed by a microcontroller running a Reinforcement Learning (Q-learning) algorithm to intelligently track the global maximum power point, streaming performance data to an IoT cloud.",
+                tech: ["Power Electronics (DC-DC Converter)", "Embedded ML (Reinforcement Learning)", "Hardware (Voltage/Current sensing)", "IoT (Wi-Fi/MQTT)"],
+                innovation: "Replaces static algorithms with an adaptive AI agent directly inside the power controller that learns and adapts to specific shading patterns of its installation environment.",
+                outcomes: "Hardware prototype, comparative efficiency charts (RL vs. traditional algorithms under simulated shading), and a real-time IoT dashboard.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false
+            },
+            {
+                id: 7,
+                title: "Vocalize: Wearable sEMG Neckband for Silent Speech Recognition",
+                problem: "Individuals with vocal cord damage or speech impairments lack non-intrusive, natural communication devices. Keyboard inputs are slow and unnatural.",
+                gap: "Current voice prosthetics are highly invasive or produce robotic sounds. Visual lip-reading AI requires facing a camera constantly.",
+                approach: "Build a wearable neckband with surface Electromyography (sEMG) sensors to read throat muscle signals during 'silent speech' (mouthing words). Use a 1D-CNN to translate signals into text, transmitted via BLE to a smartphone for natural voice synthesis.",
+                tech: ["Biosignals (sEMG)", "Signal Processing", "Deep Learning (1D-CNN/RNN)", "Wireless (BLE)"],
+                innovation: "Enables hands-free, camera-free, silent communication by decoding the neuromuscular intent of speech rather than the acoustics.",
+                outcomes: "Hardware neckband, signal filtering pipeline, classification accuracy on a limited vocabulary (10-20 commands/words), and BLE transmission latency.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication", "Signal Processing"],
+                isTop: false
+            },
+            {
+                id: 8,
+                title: "TrafficSense: Edge-AI Acoustic/Visual Sensor for Emergency Vehicle Preemption",
+                problem: "Emergency vehicles frequently face delays at intersections, leading to loss of life. Centralized traffic systems are slow to react to approaching sirens.",
+                gap: "Purely visual siren detection is blocked by buildings/trucks. Purely acoustic detection suffers from urban noise interference.",
+                approach: "Develop a street-corner IoT node featuring a microphone array and a standard camera. Use edge-AI sensor fusion to correlate the acoustic siren signature with visual flashing lights, transmitting an immediate preemption signal via V2I protocols or direct radio.",
+                tech: ["Sensor Fusion", "Edge AI (Audio + Vision ML)", "Communication (V2I / RF)", "Hardware (Mic array, Camera, Edge TPU/Jetson Nano)"],
+                innovation: "A cost-effective, decentralized sensor-fusion approach deployed directly at intersections to guarantee faster, more reliable emergency preemption without waiting for central cloud processing.",
+                outcomes: "Hardware setup, fusion algorithm accuracy vs independent visual/audio accuracy under noise, and system reaction time measurement.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false
+            }
+        ];
+
+        function getDifficultyColor(diff) {
+            if (diff === 'Easy') return 'bg-green-100 text-green-800 border-green-200';
+            if (diff === 'Medium') return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            return 'bg-red-100 text-red-800 border-red-200';
+        }
+
+        function createProjectCard(project, isTopSection = false) {
+            const domainTags = project.domains.map(d => `<span class="inline-block bg-[#EBE7E0] text-[#5A5046] text-xs px-2 py-1 rounded-full border border-[#D8D2C4] mr-1 mb-1">🏷️ ${d}</span>`).join('');
+
+            let topBadge = '';
+            if (isTopSection) {
+                topBadge = `<div class="bg-[#B95C3B] text-white text-xs font-bold px-3 py-1 rounded-t-xl text-center uppercase tracking-wider">Top Recommendation</div>`;
+            } else if (project.isCustom) {
+                topBadge = `<div class="bg-[#6C8D7A] text-white text-xs font-bold px-3 py-1 rounded-t-xl text-center uppercase tracking-wider">✨ Custom Project</div>`;
+            }
+
+            return `
+                <a href="project.html?id=${project.id}" class="bg-white rounded-xl shadow-sm border border-[#EBE7E0] hover:shadow-md transition-shadow duration-300 flex flex-col h-full project-card no-underline" data-id="${project.id}" style="text-decoration:none;">
+                    ${topBadge}
+                    <div class="p-5 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-md border ${getDifficultyColor(project.difficulty)}">
+                                ⏱️ ${project.difficulty}
+                            </span>
+                        </div>
+                        <h3 class="text-lg font-bold text-[#2C3539] mb-2 leading-tight">${project.title}</h3>
+                        <p class="text-[#7A7066] text-sm mb-4 line-clamp-3 flex-grow">${project.problem}</p>
+                        <div class="mt-auto">
+                            <div class="mb-3">${domainTags}</div>
+                            <div class="w-full text-center bg-[#F7F5F0] hover:bg-[#EBE7E0] text-[#4A3F35] font-medium py-2 rounded-lg transition-colors border border-[#D8D2C4] text-sm">
+                                View Full Details &rarr;
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            `;
+        }
+
+        function renderProjects(filter = "All") {
+            const container = document.getElementById('all-projects-container');
+            container.innerHTML = '';
+
+            let filtered = projectData;
+            if (filter !== "All") {
+                filtered = projectData.filter(p => p.difficulty === filter);
+            }
+
+            filtered.forEach(p => {
+                container.innerHTML += createProjectCard(p, false);
+            });
+            attachCardListeners();
+        }
+
+        function renderTopProjects() {
+            const container = document.getElementById('top-projects-container');
+            const topProjects = projectData.filter(p => p.isTop);
+
+            topProjects.forEach(p => {
+                const cardHtml = createProjectCard(p, true);
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = cardHtml;
+                const cardObj = tempDiv.firstElementChild;
+
+                const reasonDiv = document.createElement('div');
+                reasonDiv.className = "bg-[#FDFBF7] p-3 text-sm text-[#B95C3B] border-t border-[#EBE7E0] font-medium italic";
+                reasonDiv.innerHTML = `<strong>Why:</strong> ${p.topReason}`;
+                cardObj.appendChild(reasonDiv);
+
+                container.appendChild(cardObj);
+            });
+            attachCardListeners();
+        }
+
+        function attachCardListeners() {
+            // Modal removed — no click listeners needed
+        }
+
+        // Filtering logic
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-[#4A3F35]', 'text-white');
+                    b.classList.add('bg-[#EBE7E0]', 'text-[#4A3F35]');
+                });
+
+                e.target.classList.remove('bg-[#EBE7E0]', 'text-[#4A3F35]');
+                e.target.classList.add('bg-[#4A3F35]', 'text-white');
+
+                renderProjects(e.target.getAttribute('data-filter'));
+            });
+        });
+
+        // Charts Initialization
+        function initCharts() {
+            // Data processing for Difficulty
+            const diffCounts = { 'Easy': 0, 'Medium': 0, 'Hard': 0 };
+            projectData.forEach(p => diffCounts[p.difficulty]++);
+
+            const ctxDiff = document.getElementById('difficultyChart').getContext('2d');
+            new Chart(ctxDiff, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Medium', 'Hard'], // Easy is 0 in this dataset
+                    datasets: [{
+                        data: [diffCounts['Medium'], diffCounts['Hard']],
+                        backgroundColor: ['#EAB308', '#EF4444'], // Yellow, Red
+                        hoverOffset: 4,
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#5A5046', font: { family: 'sans-serif' } } },
+                        tooltip: { backgroundColor: '#2C3539', titleFont: { size: 14 }, bodyFont: { size: 14 }, padding: 12 }
+                    },
+                    cutout: '65%'
+                }
+            });
+
+            // Data processing for Domains
+            const domainCounts = {};
+            projectData.forEach(p => {
+                p.domains.forEach(d => {
+                    domainCounts[d] = (domainCounts[d] || 0) + 1;
+                });
+            });
+
+            const ctxDom = document.getElementById('domainChart').getContext('2d');
+            new Chart(ctxDom, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(domainCounts),
+                    datasets: [{
+                        label: 'Project Inclusion Count',
+                        data: Object.values(domainCounts),
+                        backgroundColor: 'rgba(108, 141, 122, 0.4)', // Muted green with alpha
+                        borderColor: '#6C8D7A',
+                        pointBackgroundColor: '#B95C3B',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#B95C3B',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    responsive: true,
+                    scales: {
+                        r: {
+                            angleLines: { color: '#EBE7E0' },
+                            grid: { color: '#EBE7E0' },
+                            pointLabels: { color: '#4A3F35', font: { size: 12, family: 'sans-serif', weight: 'bold' } },
+                            ticks: { stepSize: 2, color: '#7A7066', backdropColor: 'transparent' },
+                            suggestedMin: 0,
+                            suggestedMax: 8
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#2C3539', padding: 10 }
+                    }
+                }
+            });
+        }
+
+        // Init App
+        window.onload = () => {
+            // Merge custom projects from localStorage
+            const customProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+            customProjects.forEach(p => { p.isCustom = true; p.isTop = false; });
+            projectData.push(...customProjects);
+
+            renderTopProjects();
+            renderProjects();
+            initCharts();
+        };
+    </script>
+</body>
+
+</html>

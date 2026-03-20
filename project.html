@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Detail | CapstoneIntel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F5F0;
+            color: #2C3539;
+            margin: 0;
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, #2C3539 0%, #4A3F35 60%, #B95C3B 100%);
+        }
+
+        .tag-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            backdrop-filter: blur(4px);
+        }
+
+        .section-card {
+            background: #ffffff;
+            border: 1px solid #EBE7E0;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 2px 12px rgba(44,53,57,0.06);
+            transition: box-shadow 0.25s ease;
+        }
+
+        .section-card:hover { box-shadow: 0 6px 24px rgba(44,53,57,0.10); }
+
+        .section-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #7A7066;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tech-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #F0EDE8;
+            border: 1px solid #D8D2C4;
+            color: #4A3F35;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 7px 14px;
+            border-radius: 8px;
+        }
+
+        .diff-badge-medium { background: #FEF9C3; color: #854D0E; border: 1px solid #FDE68A; }
+        .diff-badge-hard   { background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+        .diff-badge-easy   { background: #DCFCE7; color: #166534; border: 1px solid #BBF7D0; }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: color 0.2s;
+            padding: 8px 0;
+        }
+        .back-btn:hover { color: #fff; }
+
+        .accent-bar         { width: 4px; border-radius: 4px; background: #B95C3B; flex-shrink: 0; }
+        .accent-bar-green   { background: #6C8D7A; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-up   { animation: fadeUp 0.45s ease forwards; }
+        .fade-up-2 { animation-delay: 0.08s; opacity: 0; }
+        .fade-up-3 { animation-delay: 0.16s; opacity: 0; }
+        .fade-up-4 { animation-delay: 0.22s; opacity: 0; }
+        .fade-up-5 { animation-delay: 0.30s; opacity: 0; }
+
+        /* ── CHAT PANEL ── */
+        #chat-panel {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+
+        #chat-window {
+            width: 380px;
+            max-height: 540px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 16px 48px rgba(44,53,57,0.22);
+            border: 1px solid #EBE7E0;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(.4,0,.2,1);
+            transform-origin: bottom right;
+        }
+
+        #chat-window.hidden-chat {
+            transform: scale(0.85) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #2C3539, #4A3F35);
+            color: #fff;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .chat-header-info { display: flex; align-items: center; gap: 10px; }
+
+        .chat-avatar {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #B95C3B, #E07A55);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .chat-title { font-weight: 700; font-size: 0.9rem; }
+        .chat-subtitle { font-size: 0.7rem; color: rgba(255,255,255,0.65); }
+
+        .close-chat-btn {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .close-chat-btn:hover { background: rgba(255,255,255,0.28); }
+
+        /* API Key setup area */
+        #api-key-setup {
+            padding: 20px;
+            background: #F9F8F6;
+            border-bottom: 1px solid #EBE7E0;
+            flex-shrink: 0;
+        }
+
+        #api-key-setup p { font-size: 0.78rem; color: #5A5046; margin-bottom: 10px; line-height: 1.5; }
+
+        .api-key-row { display: flex; gap: 8px; }
+
+        #api-key-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1.5px solid #D8D2C4;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: border-color 0.2s;
+            color: #2C3539;
+        }
+        #api-key-input:focus { border-color: #B95C3B; }
+
+        #save-key-btn {
+            padding: 8px 14px;
+            background: #B95C3B;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            white-space: nowrap;
+        }
+        #save-key-btn:hover { background: #A04D30; }
+
+        #key-status { font-size: 0.72rem; margin-top: 6px; }
+        .key-ok  { color: #16a34a; }
+        .key-err { color: #dc2626; }
+
+        /* Messages area */
+        #chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scroll-behavior: smooth;
+        }
+
+        #chat-messages::-webkit-scrollbar { width: 5px; }
+        #chat-messages::-webkit-scrollbar-track { background: transparent; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #D8D2C4; border-radius: 10px; }
+
+        .msg { display: flex; gap: 8px; align-items: flex-end; }
+        .msg.user { flex-direction: row-reverse; }
+
+        .bubble {
+            max-width: 82%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 0.82rem;
+            line-height: 1.55;
+            word-break: break-word;
+        }
+
+        .bubble.ai {
+            background: #F0EDE8;
+            color: #2C3539;
+            border-bottom-left-radius: 4px;
+        }
+
+        .bubble.user {
+            background: linear-gradient(135deg, #B95C3B, #D4704A);
+            color: #fff;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble.system-msg {
+            background: #EAF0EC;
+            color: #2E4A3D;
+            font-size: 0.78rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .msg-avatar {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        .msg-avatar.ai-av   { background: #2C3539; color: #fff; }
+        .msg-avatar.user-av { background: #B95C3B; color: #fff; }
+
+        /* typing indicator */
+        .typing-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            background: #7A7066;
+            border-radius: 50%;
+            animation: typingBounce 1.2s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40%            { transform: translateY(-5px); opacity: 1; }
+        }
+
+        /* Input row */
+        .chat-input-row {
+            padding: 12px 14px;
+            border-top: 1px solid #EBE7E0;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-shrink: 0;
+            background: #fff;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 9px 13px;
+            border: 1.5px solid #D8D2C4;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-family: 'Inter', sans-serif;
+            resize: none;
+            outline: none;
+            max-height: 90px;
+            line-height: 1.45;
+            transition: border-color 0.2s;
+            color: #2C3539;
+        }
+        #chat-input:focus { border-color: #B95C3B; }
+        #chat-input::placeholder { color: #9A9086; }
+
+        #send-btn {
+            width: 38px; height: 38px;
+            background: #B95C3B;
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, transform 0.1s;
+            flex-shrink: 0;
+        }
+        #send-btn:hover  { background: #A04D30; }
+        #send-btn:active { transform: scale(0.94); }
+        #send-btn:disabled { background: #D8D2C4; cursor: not-allowed; }
+
+        /* FAB toggle */
+        #chat-fab {
+            width: 58px; height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #B95C3B, #D4704A);
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(185,92,59,0.45);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.25s, box-shadow 0.25s;
+            flex-shrink: 0;
+        }
+        #chat-fab:hover { transform: scale(1.08); box-shadow: 0 10px 28px rgba(185,92,59,0.55); }
+
+        #chat-fab .fab-label {
+            position: absolute;
+            right: 68px;
+            background: #2C3539;
+            color: #fff;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 5px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Suggested questions */
+        .suggest-btn {
+            background: #F7F5F0;
+            border: 1.5px solid #EBE7E0;
+            color: #4A3F35;
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 6px 11px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background 0.18s, border-color 0.18s;
+            font-family: 'Inter', sans-serif;
+            text-align: left;
+        }
+        .suggest-btn:hover { background: #EBE7E0; border-color: #B95C3B; color: #B95C3B; }
+
+        @media (max-width: 480px) {
+            #chat-window { width: calc(100vw - 32px); }
+            #chat-panel  { right: 16px; bottom: 16px; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── NAV ── -->
+    <nav class="bg-[#EBE7E0] border-b border-[#D8D2C4] sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <a href="index.html" class="flex items-center space-x-2">
+                    <span class="text-2xl">🎓</span>
+                    <span class="font-bold text-xl tracking-tight text-[#4A3F35]">Capstone<span class="text-[#B95C3B]">Intel</span></span>
+                </a>
+                <a href="index.html" class="text-sm font-medium text-[#5A5046] hover:text-[#B95C3B] transition-colors flex items-center gap-1">
+                    ← Back to Explorer
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ── PAGE CONTENT (rendered by JS) ── -->
+    <div id="page-content"></div>
+
+    <!-- ── AI CHAT PANEL ── -->
+    <div id="chat-panel">
+
+        <!-- Chat window -->
+        <div id="chat-window" class="hidden-chat">
+
+            <!-- Header -->
+            <div class="chat-header">
+                <div class="chat-header-info">
+                    <div class="chat-avatar">🤖</div>
+                    <div>
+                        <div class="chat-title">Project AI Assistant</div>
+                        <div class="chat-subtitle">Powered by Groq • Llama 3 • Ask me anything</div>
+                    </div>
+                </div>
+                <button class="close-chat-btn" id="close-chat-btn" title="Close">✕</button>
+            </div>
+
+            <!-- API Key Setup -->
+            <div id="api-key-setup">
+                <p>🔑 Enter your <strong>Groq API key</strong> to activate the AI assistant. It's free &amp; saved only in your browser.<br>
+                <a href="https://console.groq.com/keys" target="_blank" style="color:#B95C3B;text-decoration:underline;">Get a free Groq key →</a></p>
+                <div class="api-key-row">
+                    <input type="password" id="api-key-input" placeholder="Paste your Groq API key…">
+                    <button id="save-key-btn">Save</button>
+                </div>
+                <div id="key-status"></div>
+            </div>
+
+            <!-- Messages -->
+            <div id="chat-messages"></div>
+
+            <!-- Suggested questions -->
+            <div id="suggestions" style="padding:0 14px 10px; display:flex; flex-wrap:wrap; gap:6px;"></div>
+
+            <!-- Input -->
+            <div class="chat-input-row">
+                <textarea id="chat-input" placeholder="Ask about this project…" rows="1"></textarea>
+                <button id="send-btn" title="Send">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- FAB -->
+        <button id="chat-fab" title="Ask AI about this project">
+            🤖
+        </button>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════
+           PROJECT DATA
+        ═══════════════════════════════════════════ */
+        const projectData = [
+            {
+                id: 1,
+                title: "NeuroGait: Wearable Smart Insoles for Real-Time Parkinson's FoG Detection",
+                problem: "Freezing of Gait (FoG) in Parkinson's disease causes severe falls. Clinical observation is subjective, and current clinical tools are too bulky for daily home use.",
+                gap: "Existing wearables often rely on wrists/waists which capture indirect gait data, and rely on cloud processing which introduces latency, failing to provide immediate corrective feedback.",
+                approach: "Develop a smart insole equipped with pressure sensors and IMUs. Implement a TinyML model directly on an edge microcontroller to detect FoG pre-motor signatures in real-time, instantly triggering localized haptic feedback to break the freeze.",
+                tech: ["Edge AI (TinyML / TensorFlow Lite)", "Embedded Systems (nRF52 / ESP32-C3)", "Wireless (BLE)", "Sensors (IMU, FSR), Haptics"],
+                innovation: "Shifts complex gait analysis from cloud/smartphone to ultra-low-power edge hardware inside the shoe, achieving sub-second latency critical for preventing falls.",
+                outcomes: "A functional wearable prototype, latency metrics for edge inference (<100ms), and classification accuracy scores on simulated/public FoG dataset.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "Highly impactful healthcare application combining edge AI with immediate physical actuation. Extremely publishable.",
+                emoji: "🧠"
+            },
+            {
+                id: 2,
+                title: "AcoustiLeak: Non-invasive Edge AI Sensor for Underground Pipeline Leak Detection",
+                problem: "Municipalities lose millions of gallons of clean water daily due to undetected micro-leaks in aging underground infrastructure.",
+                gap: "Current acoustic detection requires expensive proprietary equipment, manual surveying, or high-bandwidth continuous audio streaming which drains battery life.",
+                approach: "Create a low-cost, clamp-on acoustic sensor node using piezoelectric mics. Use embedded AI to classify acoustic signatures of leaks locally, transmitting only low-bandwidth alert payloads via LoRa to a central dashboard.",
+                tech: ["Signal Processing (Audio FFT)", "Embedded ML (Audio Classification)", "IoT Comm (LoRaWAN)", "Hardware (Piezo sensors, MCU)"],
+                innovation: "Bandwidth and power conservation through edge-based acoustic processing, making wide-scale, dense sensor deployment economically viable.",
+                outcomes: "Working sensor node, power consumption profile, ML accuracy metrics using a simulated pipe pressure test rig, and a basic LoRa dashboard.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "Tackles a critical sustainability issue. Excellent mix of signal processing, ML, and long-range communication.",
+                emoji: "💧"
+            },
+            {
+                id: 3,
+                title: "CardioRadar: Contactless Vital Sign Monitoring using mmWave & Deep Learning",
+                problem: "Continuous monitoring of heart rate and respiration for burn victims, infants, or elderly patients is hindered by uncomfortable contact-based ECG/PPG electrodes.",
+                gap: "Camera-based solutions fail in the dark and raise privacy issues. Basic radar solutions struggle with motion artifacts and precise heartbeat extraction from breathing noise.",
+                approach: "Utilize a 60GHz/77GHz mmWave FMCW radar module to capture micro-displacements of the chest. Apply deep learning (e.g., 1D-CNN or LSTM) on the radar point cloud/phase data to separate and accurately quantify respiration and heartbeat, transmitted via Wi-Fi.",
+                tech: ["Hardware (mmWave Radar Module)", "Deep Learning (CNN/LSTM)", "Signal Processing", "Wireless (Wi-Fi/MQTT)"],
+                innovation: "Applying advanced deep learning to FMCW radar signals to isolate cardiac rhythms from complex physiological and environmental noise without any privacy intrusion.",
+                outcomes: "A contactless monitor prototype, correlation metrics against a standard contact pulse oximeter, and system evaluation under various sleeping postures.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: true,
+                topReason: "mmWave is a highly sought-after industry skill. Privacy-preserving health tech is a massively growing sector.",
+                emoji: "📡"
+            },
+            {
+                id: 4,
+                title: "AgriEdge: AI-Powered Edge Node for Micro-Climate Crop Disease Prediction",
+                problem: "Farmers often apply pesticides prophylactically or too late because they lack localized, predictive insights into micro-climate conditions that breed crop diseases.",
+                gap: "Weather station data is too broad. Cloud-based predictive models require continuous internet, which is unreliable in rural agricultural zones.",
+                approach: "Deploy solar-powered edge nodes with soil and climate sensors. Train an ML model on micro-climate patterns to predict specific fungal/blight risks, executing the model locally and alerting via LoRaWAN.",
+                tech: ["IoT Sensors (Temp, Hum, Soil Moist)", "Edge AI (Decision Trees/SVM)", "Power Electronics (Solar/Battery)", "Comm (LoRaWAN)"],
+                innovation: "Decentralizes disease prediction to the farm field itself, operating completely independently of internet connectivity for inference.",
+                outcomes: "Deployed node prototype, edge ML accuracy validation, battery life simulation, and alert delivery success rate over LoRa.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false,
+                emoji: "🌾"
+            },
+            {
+                id: 5,
+                title: "AeroMesh: Autonomous Drone Swarm Node for Post-Disaster Ad-Hoc Mesh Networking",
+                problem: "In major disasters (earthquakes, floods), terrestrial communication infrastructure is destroyed, leaving first responders without coordination capabilities.",
+                gap: "Current drone setups rely on direct line-of-sight to a base station or pilot, limiting range and failing in complex urban or mountainous topographies.",
+                approach: "Equip off-the-shelf drones with lightweight Wi-Fi/ESP32-S3 mesh routing payloads and a lightweight vision AI. The drones establish an autonomous flying mesh network to relay text/voice data, while the AI scans for human shapes/SOS signals.",
+                tech: ["Wireless Mesh Networking (802.11s / ESP-Mesh)", "Computer Vision (CNN for Human Detection)", "Hardware (Drone integration)"],
+                innovation: "Simultaneous execution of emergency ad-hoc communication routing and automated visual survivor detection on a single airborne edge platform.",
+                outcomes: "Demonstration of multi-node mesh communication routing, packet delivery ratio metrics, and vision AI detection accuracy from aerial angles.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false,
+                emoji: "🚁"
+            },
+            {
+                id: 6,
+                title: "SolarMax: RL-Based Maximum Power Point Tracking (MPPT) with Cloud Telemetry",
+                problem: "Solar panels suffer efficiency drops due to partial shading, dust, and temperature changes. Traditional perturb-and-observe MPPT algorithms struggle with rapid environmental shifts.",
+                gap: "Conventional controllers fail to find the global maximum power point during complex partial shading, trapping the system at local maxima and wasting energy.",
+                approach: "Design a DC-DC converter hardware circuit governed by a microcontroller running a Reinforcement Learning (Q-learning) algorithm to intelligently track the global maximum power point, streaming performance data to an IoT cloud.",
+                tech: ["Power Electronics (DC-DC Converter)", "Embedded ML (Reinforcement Learning)", "Hardware (Voltage/Current sensing)", "IoT (Wi-Fi/MQTT)"],
+                innovation: "Replaces static algorithms with an adaptive AI agent directly inside the power controller that learns and adapts to specific shading patterns of its installation environment.",
+                outcomes: "Hardware prototype, comparative efficiency charts (RL vs. traditional algorithms under simulated shading), and a real-time IoT dashboard.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false,
+                emoji: "☀️"
+            },
+            {
+                id: 7,
+                title: "Vocalize: Wearable sEMG Neckband for Silent Speech Recognition",
+                problem: "Individuals with vocal cord damage or speech impairments lack non-intrusive, natural communication devices. Keyboard inputs are slow and unnatural.",
+                gap: "Current voice prosthetics are highly invasive or produce robotic sounds. Visual lip-reading AI requires facing a camera constantly.",
+                approach: "Build a wearable neckband with surface Electromyography (sEMG) sensors to read throat muscle signals during 'silent speech' (mouthing words). Use a 1D-CNN to translate signals into text, transmitted via BLE to a smartphone for natural voice synthesis.",
+                tech: ["Biosignals (sEMG)", "Signal Processing", "Deep Learning (1D-CNN/RNN)", "Wireless (BLE)"],
+                innovation: "Enables hands-free, camera-free, silent communication by decoding the neuromuscular intent of speech rather than the acoustics.",
+                outcomes: "Hardware neckband, signal filtering pipeline, classification accuracy on a limited vocabulary (10-20 commands/words), and BLE transmission latency.",
+                difficulty: "Hard",
+                domains: ["AI/ML", "Hardware", "Communication", "Signal Processing"],
+                isTop: false,
+                emoji: "🗣️"
+            },
+            {
+                id: 8,
+                title: "TrafficSense: Edge-AI Acoustic/Visual Sensor for Emergency Vehicle Preemption",
+                problem: "Emergency vehicles frequently face delays at intersections, leading to loss of life. Centralized traffic systems are slow to react to approaching sirens.",
+                gap: "Purely visual siren detection is blocked by buildings/trucks. Purely acoustic detection suffers from urban noise interference.",
+                approach: "Develop a street-corner IoT node featuring a microphone array and a standard camera. Use edge-AI sensor fusion to correlate the acoustic siren signature with visual flashing lights, transmitting an immediate preemption signal via V2I protocols or direct radio.",
+                tech: ["Sensor Fusion", "Edge AI (Audio + Vision ML)", "Communication (V2I / RF)", "Hardware (Mic array, Camera, Edge TPU/Jetson Nano)"],
+                innovation: "A cost-effective, decentralized sensor-fusion approach deployed directly at intersections to guarantee faster, more reliable emergency preemption without waiting for central cloud processing.",
+                outcomes: "Hardware setup, fusion algorithm accuracy vs independent visual/audio accuracy under noise, and system reaction time measurement.",
+                difficulty: "Medium",
+                domains: ["AI/ML", "Hardware", "Communication"],
+                isTop: false,
+                emoji: "🚨"
+            }
+        ];
+
+        /* ═══════════════════════════════════════════
+           PAGE RENDER
+        ═══════════════════════════════════════════ */
+        function getDiffBadgeClass(diff) {
+            if (diff === 'Easy')   return 'diff-badge-easy';
+            if (diff === 'Medium') return 'diff-badge-medium';
+            return 'diff-badge-hard';
+        }
+
+        function render(project) {
+            const diffClass  = getDiffBadgeClass(project.difficulty);
+            const domainTags = project.domains.map(d => `<span class="tag-chip">🏷️ ${d}</span>`).join('');
+            const techPills  = project.tech.map(t => `<span class="tech-pill"><span class="text-[#6C8D7A]">▪</span>${t}</span>`).join('');
+            const topBanner  = project.isTop ? `
+                <div class="bg-[#B95C3B] text-white text-center text-xs font-bold py-2 px-4 tracking-widest uppercase">
+                    ⭐ Top Advisor Recommendation — ${project.topReason}
+                </div>` : '';
+
+            document.getElementById('page-content').innerHTML = `
+                <!-- HERO -->
+                <div class="hero-bg text-white">
+                    ${topBanner}
+                    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-14 fade-up">
+                        <a href="index.html" class="back-btn mb-6 inline-flex">← Back to all projects</a>
+                        <div class="flex items-start gap-5">
+                            <span class="text-6xl mt-1 hidden sm:block select-none">${project.emoji}</span>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2 mb-4">
+                                    <span class="inline-block rounded-full border text-xs font-semibold px-3 py-1 ${diffClass}">⏱️ ${project.difficulty} Difficulty</span>
+                                    ${domainTags}
+                                </div>
+                                <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-4">${project.title}</h1>
+                                <p class="text-lg text-white/80 leading-relaxed max-w-3xl">${project.problem}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BODY -->
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-up fade-up-2">
+                        <div class="section-card flex gap-4">
+                            <div class="accent-bar"></div>
+                            <div><div class="section-label">⚠️ Existing Gap</div><p class="text-[#2C3539] leading-relaxed">${project.gap}</p></div>
+                        </div>
+                        <div class="section-card flex gap-4">
+                            <div class="accent-bar accent-bar-green"></div>
+                            <div><div class="section-label">💡 Proposed Approach</div><p class="text-[#2C3539] leading-relaxed">${project.approach}</p></div>
+                        </div>
+                    </div>
+                    <div class="section-card fade-up fade-up-3">
+                        <div class="section-label">⚙️ Core Technologies</div>
+                        <div class="flex flex-wrap gap-3 mt-2">${techPills}</div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 fade-up fade-up-4">
+                        <div class="section-card bg-[#EAF0EC] border-[#C5D5CB]">
+                            <div class="section-label text-[#2E4A3D]">✨ Innovation Factor</div>
+                            <p class="text-[#3A5A4A] leading-relaxed">${project.innovation}</p>
+                        </div>
+                        <div class="section-card bg-[#F0EBE6] border-[#D8D2C4]">
+                            <div class="section-label">📊 Expected Outcomes</div>
+                            <p class="text-[#5A5046] leading-relaxed">${project.outcomes}</p>
+                        </div>
+                    </div>
+                    <div class="section-card fade-up fade-up-5" style="background:linear-gradient(135deg,#F9F7F4,#F0EDE8);border-color:#D8D2C4;">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="text-2xl">🤖</span>
+                            <div>
+                                <div class="font-bold text-[#4A3F35]">AI Project Assistant</div>
+                                <div class="text-xs text-[#7A7066]">Powered by Groq • Llama 3</div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-[#5A5046] mb-3">Have questions about this project? The AI assistant is pre-loaded with full project details and can help you understand the technology, feasibility, research direction, and more.</p>
+                        <button onclick="openChat()" class="inline-flex items-center gap-2 bg-[#B95C3B] hover:bg-[#A04D30] text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-colors">
+                            💬 Open AI Chat
+                        </button>
+                    </div>
+                    <div class="pt-4 text-center">
+                        <a href="index.html" class="inline-flex items-center gap-2 bg-[#4A3F35] hover:bg-[#B95C3B] text-white font-semibold px-8 py-3 rounded-xl transition-colors duration-200 shadow-md">
+                            ← Back to Project Explorer
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            document.title = `${project.title} | CapstoneIntel`;
+        }
+
+        function renderNotFound() {
+            document.getElementById('page-content').innerHTML = `
+                <div style="min-height:80vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;">
+                    <div style="font-size:4rem;margin-bottom:20px;">🔍</div>
+                    <h1 class="text-3xl font-bold text-[#2C3539] mb-3">Project Not Found</h1>
+                    <p class="text-[#5A5046] mb-8 max-w-md mx-auto">Go back and choose a valid project.</p>
+                    <a href="index.html" class="inline-flex items-center gap-2 bg-[#4A3F35] hover:bg-[#B95C3B] text-white font-semibold px-8 py-3 rounded-xl transition-colors">
+                        ← Back to Explorer
+                    </a>
+                </div>`;
+        }
+
+        /* ═══════════════════════════════════════════
+           CHAT LOGIC
+        ═══════════════════════════════════════════ */
+        let chatOpen       = false;
+        let apiKey         = '';
+        let chatHistory    = [];   // [{role, content}] — OpenAI-compatible format
+        let currentProject = null;
+
+        const SUGGESTIONS = [
+            "What makes this project unique?",
+            "What hardware do I need?",
+            "How difficult is this project?",
+            "What are the expected results?",
+            "Where can I find datasets for this?"
+        ];
+
+        function buildSystemPrompt(project) {
+            return `You are a helpful academic advisor AI assistant embedded in a capstone project portfolio website called CapstoneIntel. You are specifically helping a student understand and evaluate the following engineering capstone project:
+
+PROJECT TITLE: ${project.title}
+
+PROBLEM STATEMENT: ${project.problem}
+
+EXISTING GAP: ${project.gap}
+
+PROPOSED APPROACH: ${project.approach}
+
+CORE TECHNOLOGIES: ${project.tech.join(', ')}
+
+INNOVATION FACTOR: ${project.innovation}
+
+EXPECTED OUTCOMES: ${project.outcomes}
+
+DIFFICULTY LEVEL: ${project.difficulty}
+
+DOMAINS: ${project.domains.join(', ')}
+
+Your role is to:
+- Explain any aspect of this project in simple, clear terms
+- Help the student understand the technical requirements
+- Suggest how to approach implementation
+- Answer questions about the technologies involved
+- Guide them on feasibility, timeline, and resources
+- Be encouraging and academically helpful
+
+Keep your answers concise, friendly, and practical. Use bullet points where it helps. Always stay focused on this specific project.`;
+        }
+
+        function openChat() {
+            chatOpen = true;
+            document.getElementById('chat-window').classList.remove('hidden-chat');
+            document.getElementById('chat-fab').innerHTML = '✕';
+        }
+
+        function closeChat() {
+            chatOpen = false;
+            document.getElementById('chat-window').classList.add('hidden-chat');
+            document.getElementById('chat-fab').innerHTML = '🤖';
+        }
+
+        document.getElementById('chat-fab').addEventListener('click', () => {
+            if (chatOpen) closeChat(); else openChat();
+        });
+
+        document.getElementById('close-chat-btn').addEventListener('click', closeChat);
+
+        /* API Key */
+        function hideKeySetup() {
+            document.getElementById('api-key-setup').style.display = 'none';
+        }
+
+        function loadKey() {
+            const stored = localStorage.getItem('groq_api_key');
+            if (stored) {
+                apiKey = stored;
+                hideKeySetup();
+            }
+        }
+
+        document.getElementById('save-key-btn').addEventListener('click', () => {
+            const val = document.getElementById('api-key-input').value.trim();
+            if (!val) {
+                document.getElementById('key-status').innerHTML = '<span class="key-err">Please enter a key first.</span>';
+                return;
+            }
+            apiKey = val;
+            localStorage.setItem('groq_api_key', val);
+            hideKeySetup();
+            if (chatHistory.length === 0) showWelcome();
+        });
+
+        /* Messages */
+        function appendMessage(role, text) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `msg ${role}`;
+
+            if (role === 'system-info') {
+                div.innerHTML = `<div class="bubble system-msg">${text}</div>`;
+            } else {
+                const avatarClass = role === 'ai' ? 'ai-av' : 'user-av';
+                const avatarIcon  = role === 'ai' ? '🤖' : '👤';
+                const bubbleClass = role === 'ai' ? 'ai' : 'user';
+                div.innerHTML = `
+                    <div class="msg-avatar ${avatarClass}">${avatarIcon}</div>
+                    <div class="bubble ${bubbleClass}">${text.replace(/\n/g,'<br>')}</div>
+                `;
+            }
+
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        function showTyping() {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'msg ai';
+            div.id = 'typing-indicator';
+            div.innerHTML = `
+                <div class="msg-avatar ai-av">🤖</div>
+                <div class="bubble ai" style="gap:4px;display:flex;align-items:center;">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('typing-indicator');
+            if (el) el.remove();
+        }
+
+        function showWelcome() {
+            hideSuggestions();
+            appendMessage('system-info', '🎓 AI Assistant ready — pre-loaded with full project context');
+            appendMessage('ai', `Hi! I'm your AI assistant for **${currentProject.title}**.\n\nI can help explain the technology, discuss implementation strategy, suggest resources, or answer any questions you have about this project. What would you like to know?`);
+            showSuggestions();
+        }
+
+        function showSuggestions() {
+            const box = document.getElementById('suggestions');
+            box.innerHTML = '';
+            SUGGESTIONS.forEach(q => {
+                const btn = document.createElement('button');
+                btn.className = 'suggest-btn';
+                btn.textContent = q;
+                btn.onclick = () => { sendMessage(q); hideSuggestions(); };
+                box.appendChild(btn);
+            });
+        }
+
+        function hideSuggestions() {
+            document.getElementById('suggestions').innerHTML = '';
+        }
+
+        /* Send to Gemini */
+        async function sendMessage(text) {
+            if (!text.trim()) return;
+            if (!apiKey) {
+                appendMessage('system-info', '⚠️ Please enter your Gemini API key above first.');
+                return;
+            }
+
+            hideSuggestions();
+            appendMessage('user', text);
+
+            // Add to history
+            chatHistory.push({ role: 'user', content: text });
+
+            const sendBtn = document.getElementById('send-btn');
+            sendBtn.disabled = true;
+            showTyping();
+
+            try {
+                const systemPrompt = buildSystemPrompt(currentProject);
+
+                // Build messages array: system prompt + conversation history
+                const messages = [
+                    { role: 'system', content: systemPrompt },
+                    ...chatHistory
+                ];
+
+                // Groq API call (llama-3.3-70b-versatile)
+                const response = await fetch(
+                    'https://api.groq.com/openai/v1/chat/completions',
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'llama-3.3-70b-versatile',
+                            messages,
+                            temperature: 0.7,
+                            max_tokens: 800
+                        })
+                    }
+                );
+
+                removeTyping();
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    const msg = err?.error?.message || 'Unknown API error.';
+                    appendMessage('system-info', `❌ Error: ${msg}`);
+                    chatHistory.pop();
+                    sendBtn.disabled = false;
+                    return;
+                }
+
+                const data  = await response.json();
+                const reply = data?.choices?.[0]?.message?.content || 'Sorry, I could not generate a response.';
+
+                // Add AI reply to history
+                chatHistory.push({ role: 'assistant', content: reply });
+                appendMessage('ai', reply);
+
+            } catch (e) {
+                removeTyping();
+                appendMessage('system-info', `❌ Network error: ${e.message}`);
+                chatHistory.pop();
+            }
+
+            sendBtn.disabled = false;
+        }
+
+        /* Input events */
+        document.getElementById('send-btn').addEventListener('click', () => {
+            const input = document.getElementById('chat-input');
+            const text  = input.value.trim();
+            input.value = '';
+            input.style.height = 'auto';
+            sendMessage(text);
+        });
+
+        document.getElementById('chat-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('send-btn').click();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('chat-input').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 90) + 'px';
+        });
+
+        /* ═══════════════════════════════════════════
+           INIT
+        ═══════════════════════════════════════════ */
+        const params  = new URLSearchParams(window.location.search);
+        const id      = parseInt(params.get('id'));
+
+        // Check hardcoded array first, then fall back to localStorage custom projects
+        const customProjects = JSON.parse(localStorage.getItem('custom_projects') || '[]');
+        const allProjects    = [...projectData, ...customProjects];
+        currentProject       = allProjects.find(p => p.id === id);
+
+        if (currentProject) {
+            render(currentProject);
+            loadKey();
+            // Show welcome if key already saved
+            if (apiKey) showWelcome();
+        } else {
+            renderNotFound();
+            document.getElementById('chat-panel').style.display = 'none';
+        }
+    </script>
+
+</body>
+</html>
